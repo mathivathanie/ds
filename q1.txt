@@ -148,4 +148,46 @@ plt.yticks(range(len(corr_matrix.columns)), corr_matrix.columns)
 plt.title("Correlation Heatmap")
 plt.show()
 
+vis
+import pandas as pd
+import matplotlib.pyplot as plt
 
+df = pd.read_csv("gold_price.csv")
+
+#1.line plot
+
+plt.plot(df['Price'])
+plt.title("Gold Price Trend")
+plt.xlabel("Days")
+plt.ylabel("Price")
+plt.show()
+
+#2.histogram
+
+plt.hist(df['Price'])
+plt.title("Price Distribution")
+plt.xlabel("Price")
+plt.ylabel("Frequency")
+plt.show()
+
+#3.box plot
+
+plt.boxplot(df['Price'])
+plt.title("Box Plot of Price")
+plt.show()
+
+#4.scatter plot
+
+plt.scatter(df['Open'], df['Price'])
+plt.xlabel("Open Price")
+plt.ylabel("Close Price")
+plt.title("Open vs Price")
+plt.show()
+
+#5.bar plot
+
+df['Target'].value_counts().plot(kind='bar')
+plt.title("Class Distribution")
+plt.xlabel("Class")
+plt.ylabel("Count")
+plt.show()
