@@ -1,0 +1,151 @@
+1. 
+import pandas as pd
+
+df=pd.read_csv("goldprice.csv")
+print(df.head())
+
+#1.measure of central tendancy
+
+df['Price']=df['Price'].astype(str).str.replace(',','')
+df['Price']=pd.to_numeric(df['Price'])
+
+mean_val=df['Price'].mean()
+median_val=df['Price'].median()
+mode_val=df['Price'].mode()[0]
+
+print("mean: ",mean_val);
+print("median: ",median_val);
+print("mode: ",mode_val);
+
+#2.measure of dispersion
+
+range_val= df['Price'].max() -df['Price'].min()
+var_val =df['Price'].var()
+std_val=df['Price'].std()
+
+Q1=df['Price'].quantile(0.25)
+Q3=df['Price'].quantile(0.75)
+iqr_val=Q3-Q1
+
+print("Range:", range_val)
+print("Variance:", var_val)
+print("Standard Deviation:", std_val)
+print("IQR:", iqr_val)
+
+#3.shape of distribution
+
+skew_val= df['Price'].skew()
+kurt_val=df['Price'].kurt()
+
+print("Skewness:", skew_val)
+print("Kurtosis:", kurt_val)
+
+2. import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+
+df=pd.read_csv("goldprice.csv")
+
+df['Price']=df['Price'].astype(str).str.replace(',','')
+df['Price']=pd.to_numeric(df['Price'])
+
+scalar=MinMaxScaler()
+
+df['Price_nor']=scalar.fit_transform(df[['Price']])
+
+print(df[['Price' ,'Price_nor']].head())
+
+df.to_csv("goldprice_nor.csv",index=False)
+
+3. import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+df=pd.read_csv("goldprice_nor.csv")
+
+df['Price']=df['Price'].astype(str).str.replace(',','')
+df['Price']=pd.to_numeric(df['Price'])
+
+scalar=StandardScaler()
+
+df['Price_nor']=scalar.fit_transform(df[['Price']])
+
+print(df[['Price' ,'Price_nor']].head())
+
+df.to_csv("goldprice_scaling.csv",index=False)
+
+4. import pandas as pd
+
+df = pd.read_csv("goldprice.csv")
+
+print("missing values: ",df.isnull().sum())
+
+df.fillna(method='ffill',inplace=True)
+#df.fillna(method='bfill', inplace=True)
+#df['Price'].fillna(df['Price'].mean(), inplace=True)
+#df['Price'].fillna(df['Price'].median(), inplace=True)
+#df['Category'].fillna(df['Category'].mode()[0], inplace=True)
+
+#df.dropna(inplace=True)
+#df['Price'] = df['Price'].interpolate() for timeseries best
+
+
+print("After missing values: ",df.isnull().sum())
+
+df.to_csv("GoldPrice_NoMissing.csv", index=False)
+
+5. 
+import pandas as pd
+from sklearn.utils import resample
+
+df = pd.read_csv("gold_price.csv")
+
+print("Before balancing:")
+print(df['Target'].value_counts())
+
+# Separate classes
+majority = df[df['Target'] == df['Target'].mode()[0]]
+minority = df[df['Target'] != df['Target'].mode()[0]]
+
+# Oversampling
+minority_upsampled = resample(
+    minority,
+    replace=True,
+    n_samples=len(majority),
+    random_state=42
+)
+
+df_balanced = pd.concat([majority, minority_upsampled])
+
+print("\nAfter balancing:")
+print(df_balanced['Target'].value_counts())
+
+# Save
+df_balanced.to_csv("GoldPrice_Balanced.csv", index=False)
+
+print(" Balanced dataset saved")
+
+6.
+import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("goldprice_nor.csv")
+
+cov_matrix = df[['Price_nor','Open','High','Low']].cov()
+
+print("Covariance Matrix:")
+print(cov_matrix)
+
+corr_matrix = df[['Price_nor','Open','High','Low']].corr()
+
+print("Correlation Matrix:")
+print(corr_matrix)
+
+plt.imshow(corr_matrix)
+plt.colorbar()
+
+plt.xticks(range(len(corr_matrix.columns)), corr_matrix.columns)
+plt.yticks(range(len(corr_matrix.columns)), corr_matrix.columns)
+
+plt.title("Correlation Heatmap")
+plt.show()
+
+
