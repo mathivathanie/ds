@@ -138,3 +138,65 @@ for name,model in models.items():
 
 r=pd.DataFrame(res)
 print(r.sort_values(by="sil",ascending=False))
+
+Time series
+
+import pandas as pd
+
+from statsmodels.tsa.ar_model import AutoReg
+from statsmodels.tsa.arima.model import ARIMA
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+
+# ------------------------------------------------
+# 1. Load & Prepare Data
+# ------------------------------------------------
+df = pd.read_csv("gold_price.csv")
+
+df['Date'] = pd.to_datetime(df['Date'], dayfirst=True)
+df = df.sort_values('Date')
+
+df.set_index('Date', inplace=True)
+
+# ------------------------------------------------
+# 2. AutoReg Model (AR)
+# ------------------------------------------------
+model_ar = AutoReg(df['Price'], lags=3)
+model_ar_fit = model_ar.fit()
+
+pred_ar = model_ar_fit.predict(
+    start=len(df),
+    end=len(df)+5
+)
+
+# ------------------------------------------------
+# 3. ARIMA Model
+# ------------------------------------------------
+model_arima = ARIMA(df['Price'], order=(1,1,1))
+model_arima_fit = model_arima.fit()
+
+pred_arima = model_arima_fit.forecast(steps=5)
+
+# ------------------------------------------------
+# 4. SARIMA Model
+# ------------------------------------------------
+model_sarima = SARIMAX(
+    df['Price'],
+    order=(1,1,1),
+    seasonal_order=(1,1,1,12)
+)
+
+model_sarima_fit = model_sarima.fit()
+
+pred_sarima = model_sarima_fit.forecast(steps=5)
+
+# ------------------------------------------------
+# 5. Display Results
+# ------------------------------------------------
+print("\nAutoReg Predictions:")
+print(pred_ar)
+
+print("\nARIMA Forecast:")
+print(pred_arima)
+
+print("\nSARIMA Forecast:")
+print(pred_sarima)
