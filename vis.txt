@@ -1,0 +1,65 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+df=pd.read_csv("car.csv")
+
+#bar plot
+
+df['Target'].value_counts().plot(kind='bar')
+plt.title("bar")
+plt.xlabel("class")
+plt.ylabel("count")
+plt.show()
+
+#heatmap
+
+ct=pd.crosstab(df['buying'],df['Target'])
+sns.heatmap(ct,cmap='coolwarm')
+plt.title("heatmap")
+plt.show()
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("gold_price.csv")
+
+# Clean data
+df['Price'] = df['Price'].astype(str).str.replace(',', "")
+df['Price'] = pd.to_numeric(df['Price'])
+
+df['Open'] = df['Open'].astype(str).str.replace(',', "")
+df['Open'] = pd.to_numeric(df['Open'])
+
+df['Date'] = pd.to_datetime(df['Date'], dayfirst=True)
+
+#pd.to_datetime(df['Date'], format='%d-%m-%Y')
+
+# Sort
+df = df.sort_values('Date')
+
+# Line Plot
+plt.figure()
+plt.plot(df['Date'], df['Price'])
+plt.title("Gold Price Trend Over Time")
+plt.xlabel("Date")
+plt.ylabel("Price")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+# Histogram
+plt.figure()
+plt.hist(df['Price'], bins=30)
+plt.title("Distribution of Gold Prices")
+plt.xlabel("Price")
+plt.ylabel("Frequency")
+plt.show()
+
+#scatter
+
+plt.scatter(df['Open'],df['Price'])
+plt.xlabel("Open price")
+plt.ylabel("Close price")
+plt.title("scatter plot")
+plt.show()
