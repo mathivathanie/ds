@@ -1,0 +1,54 @@
+eda
+
+import pandas as pd
+
+df=pd.read_csv("car.csv")
+
+print(df.head())
+
+print(df.info())
+print(df.describe(include='object'))
+
+print(pd.crosstab(df['buying'],df['Target']))
+
+import pandas as pd
+
+df=pd.read_csv("gold_price.csv");
+
+print(df.head())
+
+df['Price']=df['Price'].astype(str).str.replace(',',"")
+df['Price']=pd.to_numeric(df["Price"])
+
+print("mean: ",df["Price"].mean())
+print("median: ",df["Price"].median())
+print("mode: ",df["Price"].mode()[0])
+
+import pandas as pd
+
+df=pd.read_csv("gold_price.csv");
+
+df['Price']=df['Price'].astype(str).str.replace(',',"")
+df['Price']=pd.to_numeric(df["Price"])
+
+print("range: ",df['Price'].max()-df['Price'].min())
+print("variance: ",df['Price'].var())
+print("standard deviation: ",df['Price'].std())
+
+q1=df['Price'].quantile(0.25)
+q3=df['Price'].quantile(0.75)
+
+import pandas as pd
+
+df=pd.read_csv("gold_price.csv");
+
+df['Price']=df['Price'].astype(str).str.replace(',',"")
+df['Price']=pd.to_numeric(df["Price"])
+
+print("Skew: ",df['Price'].skew())
+print("kurtosis: ",df['Price'].kurt())
+
+
+
+print("IQR: ",q3-q1)
+
