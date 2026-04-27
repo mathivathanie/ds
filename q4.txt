@@ -57,3 +57,52 @@ model.fit(train_data, epochs=5, validation_data=test_data)
 loss, acc = model.evaluate(test_data)
 
 print("\nTest Accuracy:", acc)
+
+
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score,classification_report,confusion_matrix
+import os
+import cv2
+import numpy as np
+data=[]
+labels=[]
+
+dataset='image_dataset'
+
+classes=os.listdir(dataset)
+
+for label,category in enumerate(classes):
+    folder_path=os.path.join(dataset,category)
+
+    for image in os.listdir(folder_path):
+        image_path=os.path.join(folder_path,image)
+        img=cv2.imread(image_path)
+        img=cv2.resize(img,(64,64))
+        img=img.flatten()
+
+        data.append(img)
+        labels.append(label)
+X=np.array(data)
+y=np.array(labels)
+
+from sklearn.model_selection import train_test_split
+x_train,x_test,y_train,y_test=train_test_split(
+         X,y,test_size=0.2,random_state=42
+)
+
+knn=KNeighborsClassifier(n_neighbors=3)
+knn.fit(x_train,y_train)
+pred=knn.predict(x_test)
+
+print(classification_report(y_test,pred))
+
+testimg=cv2.imread('test.png')
+testimg=cv2.resize(testimg,(64,64))
+testflat=testimg.flatten().reshape(1,-1)
+
+import matplotlib.pyplot as plt
+predict=knn.predict(testflat)
+print(classes[predict[0]])
+plt.imshow(testimg)
+plt.show()
