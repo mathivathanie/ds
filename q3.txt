@@ -1,74 +1,44 @@
 import pandas as pd
-import re
 
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import accuracy_score, classification_report
-
-from sklearn.naive_bayes import MultinomialNB
 from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import MultinomialNB
 from sklearn.svm import SVC
 
-# Load datasets
-true_df = pd.read_csv("true.csv")
-false_df = pd.read_csv("false.csv")
+# 1. Load .txt file
+df = pd.read_csv("sms.txt", sep="\t", names=["label", "text"])
 
-# If column is not named 'text', adjust here
-# Example: if 'title' exists
-# true_df = true_df.rename(columns={'title': 'text'})
-# false_df = false_df.rename(columns={'title': 'text'})
+# 2. Preprocessing
+df['text'] = df['text'].str.lower()
 
-# Add labels
-true_df['label'] = 1
-false_df['label'] = 0
+# Remove punctuation & symbols
+df['text'] = df['text'].str.replace(r'[^\w\s]', '', regex=True)
 
-# Combine datasets
-df = pd.concat([true_df, false_df], ignore_index=True)
-
-# Preprocessing
-df['text'] = df['text'].astype(str).str.lower()
-df['text'] = df['text'].apply(lambda x: re.sub(r'[^\w\s]', '', x))
-
-# Features and target
-X_text = df['text']
+# 3. TF-IDF
+vectorizer = TfidfVectorizer(stop_words='english')
+X = vectorizer.fit_transform(df['text'])
 y = df['label']
 
-# TF-IDF
-vectorizer = TfidfVectorizer(stop_words='english')
-X = vectorizer.fit_transform(X_text)
-
-# Train-test split
+# 4. Split
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
-# Models
+# 5. Models dictionary
 models = {
-    "Naive Bayes": MultinomialNB(),
     "Logistic Regression": LogisticRegression(max_iter=1000),
+    "Naive Bayes": MultinomialNB(),
     "SVM": SVC()
 }
 
-results = []
-
-# Train and evaluate
+# 6. Train & Evaluate all models
 for name, model in models.items():
+    print(f"\n===== {name} =====")
+    
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
-
-    acc = accuracy_score(y_test, y_pred)
-
-    results.append({
-        "Model": name,
-        "Accuracy": acc
-    })
-
-    print(f"\n{name}")
-    print("Accuracy:", acc)
-    print("Classification Report:\n", classification_report(y_test, y_pred))
-
-# Compare models
-results_df = pd.DataFrame(results)
-
-print("\nModel Comparison:")
-print(results_df.sort_values(by="Accuracy", ascending=False))
+    
+    print("Accuracy:", accuracy_score(y_test, y_pred))
+    print(classification_report(y_test, y_pred))
